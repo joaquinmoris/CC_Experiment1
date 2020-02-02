@@ -1,8 +1,7 @@
-library(tidyverse)
 library(googledrive)
 
 for (cur_account in 1:10){
-  googledrive::drive_auth(email = paste0('sotano1pc', cur_account, '@gmail.com'))
+  drive_auth(email = paste0('sotano1pc', cur_account, '@gmail.com'))
   data_files <- drive_find(pattern = 'CCTest2020', type = 'csv')
 
   if (nrow(data_files)){
