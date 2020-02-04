@@ -1,6 +1,6 @@
 ---
 title: "Analyses experiment 1 - project CC"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -50,6 +50,7 @@ judgement_data %>%
   n_participants()
 ```
 
+\newpage
 Types of trial per group and phase
 ````{r}
 judgement_data %>%
@@ -77,6 +78,8 @@ judgement_data_filtered %>%
   n_participants()
 ```
 
+\newpage
+
 ## Analysis and plots of judgements
 
 ### Summary graph and omnibus ANOVA for each phase
@@ -103,7 +106,7 @@ t.test_T1 (judgement_data_filtered,
 `r t.test_T1 (judgement_data_filtered,
              group_pairs = list(c("CC","NFE"), c("CC","SE"), c("NFE","SE")))`
 
-
+\newpage
 ***
 
 ## Analysis and plots of ratings
