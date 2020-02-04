@@ -10,17 +10,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Setup
 
 ```{r, message=FALSE}
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(purrr)
 library(afex)
+library(papaja)
 source('../../scripts/functions/plot_functions.R')
 source('../../scripts/functions/analysis_functions.R')
-# Colour-blind palette from http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 ```
 
-## Load data
+## Load judgements data
 
-Load data of the predicitve judgements made during the learning trials. The CSV contains the following columns:
+Load data of the predictive judgements made during the learning trials. The CSV contains the following columns:
 
 
 - **participant**: ID of the participant
@@ -77,39 +80,69 @@ judgement_data_filtered %>%
 ## Analysis and plots of judgements
 
 ### Summary graph and omnibus ANOVA for each phase
-```{r, message=FALSE}
+```{r, message=FALSE, fig.cap=c("**Figure 1.** Mean judgements during acqusition phase. Error bars indicate the standard error of the mean.", "**Figure 2.** Mean judgements during treatment phase. Error bars indicate the standard error of the mean.", "**Figure 3.** Mean judgements during test phase. Error bars indicate the standard error of the mean.")}
 for (cur_phase in unique(judgement_data_filtered$phase)){
-  judgement_data_filtered %>% 
-    plot_phase(cur_phase, save = TRUE)
-  judgement_data_filtered %>% 
+  judgement_data_filtered %>%
+    plot_phase(cur_phase)
+  cat('\n\n')
+  judgement_data_filtered %>%
     omnibus_phase(cur_phase)
 }
 ```
 
-### Graph and preplanned t-test in the first and second trial of the test phase for CS A
-```{r}
-  plot_T1T2_ext(judgement_data_filtered, save = TRUE)
-  t.test_T1T2 (judgement_data_filtered,
-               group_pairs = list(c("CC","NFE"), c("CC","SE"), c("NFE","SE")))
+### Graph and preplanned t-tests in the first trial of the test phase for CS A
+```{r, message=FALSE, fig.cap="**Figure 4.** Mean judgements during first trial of the test phase. Error bars indicate the standard error of the mean."}
+plot_T1_ext(judgement_data_filtered)
 ```
+
+```{r, results = 'hide'}
+t.test_T1 (judgement_data_filtered,
+  group_pairs = list(c("CC","NFE"), c("CC","SE"), c("NFE","SE")))
+```
+
+`r t.test_T1 (judgement_data_filtered,
+             group_pairs = list(c("CC","NFE"), c("CC","SE"), c("NFE","SE")))`
+
+
+***
 
 ## Analysis and plots of ratings
 
 ### Load the ratings data and filter them keeping the same participants
 
+Load data of the ratings of the CS made after each phase and of the sounds made at the end. The CSV contains the following columns:
+
+
+- **participant**: ID of the participant
+- **group**: ID of the group (1: Counterconditioning -CC-, 2: Novelty-facilitated extinction -NFE-. 3: Standard extinction -SE-)
+- **groupType**: Name of the group
+- **phase**: Phase in which the rating took place
+- **type**: type of rating requested (Evaluation: Like/Dislike rating, Anxiety: Level of anxiety)
+- **CS**: CS A or CS B
+- **sound**: Sound presented as EI on that trial (positive, negative, neutral)
+- **response**: Value of the rating provided (0-10) As values increase, the likeability is higher (Evaluation trials) or the anxiety is reduced (Anxiety trials).
+- **rt**: Reaction time of the judgement (s)
 ```{r, message = FALSE}
 evaluation_data_filtered <- read_csv('../data/evaluation_data.csv')
 evaluation_data_filtered <- evaluation_data_filtered %>%
   filter(participant %in% as.integer(judgement_data_filtered$participant %>% unique()))
 ```
 
-```{r}
+```{r, message = FALSE, fig.cap="**Figure 5.** Mean like/dislike ratings for each CS after each phase. Error bars indicate the standard error of the mean."}
 plot_CS_evaluations (evaluation_data_filtered)
 omnibus_phase_evaluations_CS (evaluation_data_filtered, "Ext")
+```
+
+
+```{r, results = 'hide'}
 t.test_Ext_evaluations(evaluation_data_filtered)
 ```
 
-```{r}
+
+`r t.test_Ext_evaluations(evaluation_data_filtered)`
+
+
+```{r, message = FALSE, fig.cap = "**Figure 6.** Mean like/dislike ratings for each sound. Error bars indicate the standard error of the mean."}
 plot_sound_evaluations(evaluation_data_filtered)
 omnibus_phase_evaluations_sounds (evaluation_data_filtered, "Final")
 ```

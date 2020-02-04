@@ -52,15 +52,15 @@ add_ratings_data <- function(filename){
                               !is.na(loopValenceTreatment.thisRepN) ~ "Ext",
                               !is.na(loopValenceFinal.thisRepN) ~ "Test",
                               TRUE ~ "Final")) %>%
-    mutate(CS = case_when(imageEC == 0 ~ "A",
-                          imageEC == 1 ~ "B")) %>%
+    mutate(CS = case_when(imageECValence == 0 ~ "A",
+                          imageECValence == 1 ~ "B")) %>%
     rename(response = ratingValence.response,
            rt = ratingValence.rt) %>%
     mutate(response = ifelse(is.na(response),valoracionRating.response, response),
            rt = ifelse(is.na(rt),valoracionRating.rt, rt)) %>%
-    mutate(sound = case_when(soundTypeValence == 'sounds/noisegroup.wav' ~ 'Noise',
-                             soundTypeValence == 'sounds/1085_2.wav' ~ 'Positive',
-                             soundTypeValence == 'sounds/358.wav' ~ 'Neutral')) %>%
+    mutate(sound = case_when(soundTypeValence == 'sounds/noisegroup.wav' ~ 'negative',
+                             soundTypeValence == 'sounds/1085_2.wav' ~ 'positive',
+                             soundTypeValence == 'sounds/358.wav' ~ 'neutral')) %>%
     mutate(type = case_when(phase != 'Final' ~ 'Evaluation',
                             orderLabels == 'Muy agradable, Muy desagradable' ~ 'Evaluation',
                             orderLabels == 'Poca ansiedad, Mucha ansiedad' ~ 'Anxiety')) %>%
